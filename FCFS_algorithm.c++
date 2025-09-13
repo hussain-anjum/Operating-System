@@ -1,0 +1,60 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int main()
+{
+    int n;
+    cout << "Enter number of processes: ";
+    cin >> n;
+    if (n <= 0)
+    {
+        cerr << "Invalid number of processes" << endl;
+        return 1;
+    }
+
+    int bt[n]; // burst time
+    int wt[n]; // waiting time
+
+    for (int i = 0; i < n; ++i)
+    {
+        cout << "Enter burst time for P" << i << ": ";
+        cin >> bt[i];
+        if (bt[i] < 0)
+        {
+            cerr << "Burst time must be non-negative" << endl;
+            return 1;
+        }
+    }
+
+    int total_tat = 0;
+    for (int i = 0; i < n; i++)
+    {
+        total_tat += bt[i];
+    }
+
+    wt[0] = 0; // waiting time for 1st process is 0
+    for (int i = 1; i < n; ++i)
+    {
+        wt[i] = wt[i - 1] + bt[i - 1];
+    }
+
+    int total_wt = 0;
+    for (int i = 0; i < n; ++i)
+    {
+        total_wt += wt[i];
+    }
+
+    double avg_wt = static_cast<double>(total_wt) / n;
+
+    cout << "\nProcess\t\tBurst Time\tWaiting Time\n";
+    for (int i = 0; i < n; ++i)
+    {
+        cout << "P" << i << "\t\t" << bt[i] << "\t\t" << wt[i] << endl;
+    }
+
+    cout << "\nTotal turn around time: " << total_tat << endl;
+    cout << "Total Waiting Time: " << total_wt << endl;
+    cout << "Average Waiting Time: " << fixed << setprecision(2) << avg_wt << endl;
+
+    return 0;
+}
