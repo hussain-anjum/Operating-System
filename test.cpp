@@ -1,53 +1,77 @@
 #include <bits/stdc++.h>
 using namespace std;
+
 int main()
 {
     int n;
-    cout << "Enter the no of process: ";
+    cout << "Enter number of processes: ";
     cin >> n;
     if (n <= 0)
     {
-        cerr << "Invalid no of process" << endl;
+        cerr << "Invalid number of processes" << endl;
         return 1;
     }
-    int bt[n];
-    int wt[n];
-    int total_tat = 0, total_wt = 0;
 
-    for (int i = 0; i < n; i++)
+    int bt[n]; // burst time
+    int wt[n]; // waiting time
+
+    for (int i = 0; i < n; ++i)
     {
-        cout << "Enter the burst time for P" << i << ": ";
+        cout << "Enter burst time for P" << i << ": ";
         cin >> bt[i];
         if (bt[i] < 0)
         {
-            cerr << "Burst time can not be non-negative" << endl;
+            cerr << "Burst time must be non-negative" << endl;
             return 1;
         }
     }
 
-    for (int i = 0; i < n; i++)
+    // Calculate waiting times
+    wt[0] = 0; // waiting time for 1st process is 0
+    for (int i = 1; i < n; ++i)
     {
-        total_tat += bt[i];
+        wt[i] = wt[i - 1] + bt[i - 1];
     }
 
-    wt[0] = 0;
-    for (int i = 1; i < n; i++)
-    {
-        wt[i] = bt[i - 1] + wt[i - 1];
-    }
-    for (int i = 0; i < n; i++)
+    // Calculate total waiting time
+    int total_wt = 0;
+    for (int i = 0; i < n; ++i)
     {
         total_wt += wt[i];
     }
 
-    double avg_wt = (double)total_wt / n;
-
-    cout << "\nProcess\t\tBurst time\tWaiting time" << endl;
-    for (int i = 0; i < n; i++)
+    // Calculate turnaround times and total turnaround time
+    int tat[n]; // turnaround time array
+    int total_tat = 0;
+    for (int i = 0; i < n; ++i)
     {
-        cout << "P" << i << "\t\t" << bt[i] << "\t\t" << wt[i] << endl;
+        tat[i] = bt[i] + wt[i];
+        total_tat += tat[i];
     }
-    cout << "\nTotal turn around time: " << total_tat << endl;
-    cout << "Total waiting time: " << total_wt << endl;
-    cout << "Average waiting time: " << fixed << setprecision(2) << avg_wt;
+
+    double avg_wt = static_cast<double>(total_wt) / n;
+    double avg_tat = static_cast<double>(total_tat) / n;
+
+    cout << "\nProcess\t\tBurst Time\tWaiting Time\tTurnaround Time\n";
+    for (int i = 0; i < n; ++i)
+    {
+        cout << "P" << i << "\t\t" << bt[i] << "\t\t" << wt[i] << "\t\t" << tat[i] << endl;
+    }
+
+    cout << "\nTotal Turnaround Time: " << total_tat << endl;
+    cout << "Total Waiting Time: " << total_wt << endl;
+    cout << "Average Waiting Time: " << fixed << setprecision(2) << avg_wt << endl;
+    cout << "Average Turnaround Time: " << fixed << setprecision(2) << avg_tat << endl;
+
+    // Gantt Chart
+    cout << "\nGantt Chart:\n";
+    for (int i = 0; i < n; ++i)
+    {
+        cout << "P" << i;
+        if (i != n - 1)
+            cout << " => ";
+    }
+    cout << "\n";
+
+    return 0;
 }
