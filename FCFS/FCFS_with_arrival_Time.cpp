@@ -1,5 +1,12 @@
+// Here is some fault in it. I will fix it.
 #include <bits/stdc++.h>
 using namespace std;
+
+struct Process
+{
+    string pid;
+    int at, bt, ct, tat, wt;
+};
 
 int main()
 {
@@ -8,66 +15,73 @@ int main()
     int n;
     infile >> n;
 
-    string pid[100];
-    int arrival[100], bt[100], wt[100], tat[100];
+    vector<Process> processes(n);
+    for (int i = 0; i < n; i++)
+    {
+        infile >> processes[i].pid >> processes[i].at >> processes[i].bt;
+    }
+    sort(processes.begin(), processes.end(), [](const Process &a, const Process &b)
+         { return a.at < b.at; });
+
+    queue<Process> ready_queue;
+    for (auto &p : processes)
+    {
+        ready_queue.push(p);
+    }
+    vector<Process> executed;
+    vector<pair<string, int>> gantt_chart;
     int current_time = 0;
+    int idle_time = 0;
 
-    for (int i = 0; i < n; i++)
+    while (!ready_queue.empty())
     {
-        infile >> pid[i] >> arrival[i] >> bt[i];
-    }
+        Process p = ready_queue.front();
+        ready_queue.pop();
 
-    for (int i = 0; i < n - 1; i++)
-    {
-        for (int j = 0; j < n - i - 1; j++)
+        if (p.at > current_time)
         {
-            if (arrival[j] > arrival[j + 1])
-            {
-                swap(arrival[j], arrival[j + 1]);
-                swap(bt[j], bt[j + 1]);
-                swap(pid[j], pid[j + 1]);
-            }
+            int idle_duration = p.at - current_time;
+            idle_time += idle_duration;
+            gantt_chart.push_back({"Idle", idle_duration});
+            current_time = p.at;
         }
+
+        gantt_chart.push_back({p.pid, p.bt});
+        current_time += p.bt;
+        p.ct = current_time;
+        p.tat = p.ct - p.at;
+        p.wt = p.tat - p.bt;
+
+        executed.push_back(p);
     }
 
-    for (int i = 0; i < n; i++)
-    {
-        if (arrival[i] > current_time)
-        {
-            current_time = arrival[i];
-        }
-        wt[i] = current_time - arrival[i];
-        tat[i] = wt[i] + bt[i];
-        current_time += bt[i];
-    }
     cout << endl;
-
     cout << "Gantt Chart: ";
-    for (int i = 0; i < n; i++)
+    for (size_t i = 0; i < gantt_chart.size(); i++)
     {
-        cout << pid[i];
-        if (i != n - 1)
+        cout << gantt_chart[i].first;
+        if (i != gantt_chart.size() - 1)
             cout << " --> ";
     }
     cout << endl;
 
-    cout << "\nProcess\tArrival\tBurst Time\tWaiting Time\tTurnaround Time\n";
-
-    int total_wt = 0, total_tat = 0;
-    for (int i = 0; i < n; i++)
+    cout << "\nProcess\tAT\tBT\tCT\tTAT\tWT\n";
+    int total_tat = 0, total_wt = 0;
+    for (auto &p : executed)
     {
-        cout << pid[i] << "\t" << arrival[i] << "\t" << bt[i] << "\t\t" << wt[i] << "\t\t" << tat[i] << "\n";
-        total_wt += wt[i];
-        total_tat += tat[i];
+        cout << p.pid << "\t" << p.at << "\t" << p.bt
+             << "\t" << p.ct << "\t" << p.tat << "\t" << p.wt << "\n";
+        total_tat += p.tat;
+        total_wt += p.wt;
     }
 
     double avg_wt = (double)total_wt / n;
     double avg_tat = (double)total_tat / n;
 
     cout << "\nTotal Waiting Time: " << total_wt;
-    cout << "\nAverage Waiting Time: " << avg_wt;
     cout << "\nAverage Turnaround Time: " << avg_tat;
-    cout << "\nTurnaround Time: " << current_time;
+    cout << "\nAverage Waiting Time: " << avg_wt;
+    cout << "\nTotal Idle Time: " << idle_time;
 
     return 0;
 }
