@@ -92,6 +92,7 @@ int main()
     double avg_tat = (double)total_tat / n;
 
     cout << "\nTotal Waiting Time: " << total_wt;
+    cout << "\nTotal Turnaround Time: " << total_tat;
     cout << "\nAverage Turnaround Time: " << avg_tat;
     cout << "\nAverage Waiting Time: " << avg_wt;
     cout << "\nTotal Idle Time: " << idle_time;
