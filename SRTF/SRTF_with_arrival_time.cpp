@@ -1,26 +1,21 @@
 #include <bits/stdc++.h>
 using namespace std;
-
 struct Process
 {
     string pid;
     int at, bt, ct, tat, wt, remaining_bt;
 };
-
 int main()
 {
     ifstream infile("SRTF.txt");
-
     int n;
     infile >> n;
-
     vector<Process> processes(n);
     for (int i = 0; i < n; i++)
     {
         infile >> processes[i].pid >> processes[i].at >> processes[i].bt;
         processes[i].remaining_bt = processes[i].bt;
     }
-
     vector<pair<string, int>> gantt_chart;
     int current_time = 0;
     int completed_count = 0;
@@ -29,7 +24,7 @@ int main()
 
     while (completed_count < n)
     {
-        int shortest_index = -1;
+        int short_index = -1;
         int min_remaining_bt = INT_MAX;
 
         for (int i = 0; i < n; i++)
@@ -39,12 +34,11 @@ int main()
                 if (processes[i].remaining_bt < min_remaining_bt)
                 {
                     min_remaining_bt = processes[i].remaining_bt;
-                    shortest_index = i;
+                    short_index = i;
                 }
             }
         }
-
-        if (shortest_index == -1)
+        if (short_index == -1)
         {
             current_time++;
             idle_time++;
@@ -59,8 +53,7 @@ int main()
             }
             continue;
         }
-
-        Process &p = processes[shortest_index];
+        Process &p = processes[short_index];
         p.remaining_bt--;
         current_time++;
 
@@ -82,7 +75,6 @@ int main()
             completed_count++;
         }
     }
-
     cout << "\nGantt Chart: ";
     for (size_t i = 0; i < gantt_chart.size(); i++)
     {
@@ -101,7 +93,6 @@ int main()
         total_tat += p.tat;
         total_wt += p.wt;
     }
-
     double avg_wt = (double)total_wt / n;
     double avg_tat = (double)total_tat / n;
 
