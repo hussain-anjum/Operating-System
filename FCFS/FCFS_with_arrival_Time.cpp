@@ -1,4 +1,3 @@
-// Here is some fault in it. I will fix it.
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -20,17 +19,19 @@ int main()
     {
         infile >> processes[i].pid >> processes[i].at >> processes[i].bt;
     }
+
     sort(processes.begin(), processes.end(), [](const Process &a, const Process &b)
          { return a.at < b.at; });
 
-    queue<Process> ready_queue;
+    queue<Process> ready_queue; // Queue to manage processes in FCFS order based on arrival time
     for (auto &p : processes)
     {
-        ready_queue.push(p);
+        ready_queue.push(p); // Enqueue all processes initially based on arrival time
     }
+
     vector<Process> executed;
     vector<pair<string, int>> gantt_chart;
-    int current_time = 0;
+    int current_time = processes[0].at;
     int idle_time = 0;
 
     while (!ready_queue.empty())
@@ -48,6 +49,7 @@ int main()
 
         gantt_chart.push_back({p.pid, p.bt});
         current_time += p.bt;
+
         p.ct = current_time;
         p.tat = p.ct - p.at;
         p.wt = p.tat - p.bt;
@@ -55,18 +57,18 @@ int main()
         executed.push_back(p);
     }
 
-    cout << endl;
-    cout << "Gantt Chart: ";
+    cout << "\nGantt Chart: ";
     for (size_t i = 0; i < gantt_chart.size(); i++)
     {
         cout << gantt_chart[i].first;
         if (i != gantt_chart.size() - 1)
             cout << " --> ";
     }
-    cout << endl;
+    cout << "\n";
 
     cout << "\nProcess\tAT\tBT\tCT\tTAT\tWT\n";
     int total_tat = 0, total_wt = 0;
+
     for (auto &p : executed)
     {
         cout << p.pid << "\t" << p.at << "\t" << p.bt
@@ -75,13 +77,9 @@ int main()
         total_wt += p.wt;
     }
 
-    double avg_wt = (double)total_wt / n;
-    double avg_tat = (double)total_tat / n;
-
-    cout << "\nTotal Waiting Time: " << total_wt;
-    cout << "\nAverage Turnaround Time: " << avg_tat;
-    cout << "\nAverage Waiting Time: " << avg_wt;
-    cout << "\nTotal Idle Time: " << idle_time;
+    cout << "\nAverage Turnaround Time: " << (double)total_tat / n;
+    cout << "\nAverage Waiting Time: " << (double)total_wt / n;
+    cout << "\nTotal Idle Time: " << idle_time << "\n";
 
     return 0;
 }
