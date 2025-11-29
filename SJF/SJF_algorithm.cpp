@@ -1,76 +1,86 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+struct Process
+{
+    string pid;
+    int bt, ct, tat, wt;
+};
+
 int main()
 {
+    ifstream infile("SJF2.txt");
+
     int n;
-    cout << "Enter number of processes: ";
-    cin >> n;
-    if (n <= 0)
-    {
-        cerr << "Invalid number of processes" << endl;
-        return 1;
-    }
+    infile >> n;
 
-    int bt[n];  // burst time
-    int wt[n];  // waiting time
-    int tat[n]; // turnaround time
-    bool completed[n] = {false};
-
-    for (int i = 0; i < n; ++i)
+    vector<Process> processes(n);
+    for (int i = 0; i < n; i++)
     {
-        cout << "Enter burst time for P" << i << ": ";
-        cin >> bt[i];
-        if (bt[i] < 0)
+        infile >> processes[i].bt;
+        if (processes[i].bt < 0)
         {
             cerr << "Burst time must be non-negative" << endl;
             return 1;
         }
-        wt[i] = 0;
-        tat[i] = 0;
+        processes[i].pid = "P" + to_string(i);
     }
 
-    int completed_count = 0, current_time = 0;
-    int total_wt = 0, total_tat = 0;
+    // Sort by burst time (SJF without arrival time)
+    sort(processes.begin(), processes.end(), [](const Process &a, const Process &b)
+         { return a.bt < b.bt; });
 
-    while (completed_count < n)
+    queue<Process> ready_queue;
+    for (auto &p : processes)
     {
-        int idx = -1;
-        int min_burst = INT_MAX;
-
-        for (int i = 0; i < n; i++)
-        {
-            if (!completed[i] && bt[i] < min_burst)
-            {
-                min_burst = bt[i];
-                idx = i;
-            }
-        }
-
-        if (idx == -1)
-        {
-            break; // no process left
-        }
-
-        wt[idx] = current_time;
-        tat[idx] = wt[idx] + bt[idx];
-        current_time += bt[idx];
-        completed[idx] = true;
-        completed_count++;
-        total_wt += wt[idx];
-        total_tat += tat[idx];
+        ready_queue.push(p);
     }
 
-    cout << "\nProcess\t\tBurst Time\tWaiting Time\n";
-    for (int i = 0; i < n; i++)
+    vector<Process> executed;
+    vector<pair<string, int>> gantt_chart;
+    int current_time = 0;
+
+    while (!ready_queue.empty())
     {
-        cout << "P" << i << "\t\t" << bt[i] << "\t\t" << wt[i] << "\n";
+        Process p = ready_queue.front();
+        ready_queue.pop();
+
+        gantt_chart.push_back({p.pid, p.bt});
+        p.wt = current_time;
+        current_time += p.bt;
+        p.ct = current_time;
+        p.tat = p.ct;
+
+        executed.push_back(p);
+    }
+
+    cout << "\nGantt Chart: ";
+    for (size_t i = 0; i < gantt_chart.size(); i++)
+    {
+        cout << gantt_chart[i].first;
+        if (i != gantt_chart.size() - 1)
+            cout << " --> ";
+    }
+    cout << "\n";
+
+    cout << "\nProcess\tBT\tCT\tTAT\tWT\n";
+    int total_tat = 0, total_wt = 0;
+
+    for (auto &p : executed)
+    {
+        cout << p.pid << "\t" << p.bt << "\t" << p.ct
+             << "\t" << p.tat << "\t" << p.wt << "\n";
+        total_tat += p.tat;
+        total_wt += p.wt;
     }
 
     double avg_wt = (double)total_wt / n;
-    cout << "\nTotal Turnaround Time: " << total_tat << endl;
-    cout << "Total Waiting Time: " << total_wt << endl;
-    cout << "Average Waiting Time: " << avg_wt;
+    double avg_tat = (double)total_tat / n;
+
+    cout << "\nTotal Turnaround Time: " << total_tat;
+    cout << "\nTotal Waiting Time: " << total_wt;
+    cout << "\nAverage Turnaround Time: " << avg_tat;
+    cout << "\nAverage Waiting Time: " << fixed << setprecision(2) << avg_wt << "\n";
 
     return 0;
 }
