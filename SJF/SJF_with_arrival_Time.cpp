@@ -20,9 +20,13 @@ int main()
         infile >> processes[i].pid >> processes[i].at >> processes[i].bt;
     }
 
+    sort(processes.begin(), processes.end(), [](const Process &a, const Process &b)
+         { return a.at < b.at; });
+
     vector<Process> executed;
     vector<pair<string, int>> gantt_chart;
-    int current_time = 0;
+
+    int current_time = processes[0].at;
     int idle_time = 0;
     vector<bool> completed(n, false);
 
@@ -60,17 +64,19 @@ int main()
         }
         Process &p = processes[shortest_job];
         gantt_chart.push_back({p.pid, p.bt});
+
         current_time += p.bt;
         p.ct = current_time;
         p.tat = p.ct - p.at;
         p.wt = p.tat - p.bt;
+
         executed.push_back(p);
         completed[shortest_job] = true;
     }
 
     cout << endl;
     cout << "Gantt Chart: ";
-    for (size_t i = 0; i < gantt_chart.size(); i++)
+    for (int i = 0; i < gantt_chart.size(); i++)
     {
         cout << gantt_chart[i].first;
         if (i != gantt_chart.size() - 1)
@@ -80,6 +86,7 @@ int main()
 
     cout << "\nProcess\tAT\tBT\tCT\tTAT\tWT\n";
     int total_tat = 0, total_wt = 0;
+
     for (auto &p : processes)
     {
         cout << p.pid << "\t" << p.at << "\t" << p.bt
