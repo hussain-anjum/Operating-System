@@ -16,8 +16,13 @@ int main()
         infile >> processes[i].pid >> processes[i].at >> processes[i].bt;
         processes[i].remaining_bt = processes[i].bt;
     }
+
+    sort(processes.begin(), processes.end(), [](const Process &a, const Process &b)
+         { return a.at < b.at; });
+
     vector<pair<string, int>> gantt_chart;
-    int current_time = 0;
+
+    int current_time = processes[0].at;
     int completed_count = 0;
     int idle_time = 0;
     string last_pid = "";
