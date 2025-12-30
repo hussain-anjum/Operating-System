@@ -18,15 +18,14 @@ int main()
     for (int i = 0; i < n; i++)
     {
         infile >> processes[i].bt;
-        if (processes[i].bt < 0)
-        {
-            cerr << "Burst time must be non-negative" << endl;
-            return 1;
-        }
+        // if (processes[i].bt < 0)
+        // {
+        //     cerr << "Burst time must be non-negative" << endl;
+        //     return 1;
+        // }
         processes[i].pid = "P" + to_string(i);
     }
 
-    // Sort by burst time (SJF without arrival time)
     sort(processes.begin(), processes.end(), [](const Process &a, const Process &b)
          { return a.bt < b.bt; });
 
