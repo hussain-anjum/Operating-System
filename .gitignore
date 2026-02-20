@@ -1,8 +1,9 @@
 FCFS_with_arrival_Time.exe
 FCFS_without_arrival_Time.exe
-SJF_algorithm.exe
+SJF_without_arrival_time.exe
 SJF_with_arrival_Time.exe
 SRTF_with_arrival_time.exe
+SRTF_without_arrival_time.exe
 rr_without_arrival_time.exe
 rr_with_arrival_time.exe
 priority_schedule_without_arrival_time.exe
