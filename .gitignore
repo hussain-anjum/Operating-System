@@ -7,6 +7,8 @@ SRTF_without_arrival_time.exe
 rr_without_arrival_time.exe
 rr_with_arrival_time.exe
 priority_schedule_without_arrival_time.exe
+priority_non-pre_with_arrival.exe
+priority_preemp_with_arrival.exe
 test.cpp
 test.exe
 test.txt
